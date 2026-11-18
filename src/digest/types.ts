@@ -15,4 +15,4 @@ export type NightDigest = {
 } | null;
 
 // Returns null when the night file is missing; malformed lines are counted in the result.
-export declare function readNight(runsDir: string, night: string): NightDigest;
+export type ReadNight = (runsDir: string, night: string) => NightDigest;
