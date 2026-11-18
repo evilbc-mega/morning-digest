@@ -64,6 +64,21 @@ describe('digest routes', () => {
     expect(jsonResponse.status).toBe(404);
   });
 
+  it('serves both nights linked from the status board', async () => {
+    for (const night of ['2026-10-27', '2026-10-28']) {
+      copyFileSync(new URL(`../runs/${night}.jsonl`, import.meta.url), join(runsDir, `${night}.jsonl`));
+    }
+    const app = createApp(config);
+    const boardResponse = await app.request('/');
+    const board = await boardResponse.text();
+
+    expect(board).toContain('href="/digest/2026-10-27"');
+    expect(board).toContain('href="/digest/2026-10-28"');
+    for (const night of ['2026-10-27', '2026-10-28']) {
+      expect((await app.request(`/digest/${night}`)).status).toBe(200);
+    }
+  });
+
   it('renders an empty file as nothing ran and returns an empty JSON digest', async () => {
     writeFileSync(join(runsDir, '2026-10-30.jsonl'), '');
     const app = createApp(config);
