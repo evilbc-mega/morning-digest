@@ -50,12 +50,8 @@ describe('digest routes', () => {
     const jsonResponse = await app.request('/api/digest/2026-10-28');
     expect(jsonResponse.status).toBe(200);
     expect(jsonResponse.headers.get('content-type')).toContain('application/json');
-    const digest = await jsonResponse.json() as {
-      malformedLines: number;
-      rows: { job: string }[];
-    };
-    expect(digest.rows.map(({ job }) => job)).toEqual(expectedJobs);
-    expect(digest.malformedLines).toBe(1);
+    const rows = await jsonResponse.json() as { job: string }[];
+    expect(rows.map(({ job }) => job)).toEqual(expectedJobs);
   });
 
   it('returns 404 for a night with no file on both routes', async () => {
@@ -79,10 +75,6 @@ describe('digest routes', () => {
 
     const jsonResponse = await app.request('/api/digest/2026-10-30');
     expect(jsonResponse.status).toBe(200);
-    expect(await jsonResponse.json()).toMatchObject({
-      rows: [],
-      malformedLines: 0,
-      counts: { ok: 0, retry: 0, fail: 0 },
-    });
+    expect(await jsonResponse.json()).toEqual([]);
   });
 });
